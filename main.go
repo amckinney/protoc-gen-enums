@@ -2,6 +2,7 @@ package main // import github.com/amckinney/protoc-gen-enums
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -67,10 +68,16 @@ func generate(req *plugin.CodeGeneratorRequest) (*plugin.CodeGeneratorResponse, 
 }
 
 func descriptorToGeneratorFile(filename string, d *descriptor.FileDescriptorProto) (*plugin.CodeGeneratorResponse_File, error) {
-	var output string
-	for _, e := range d.GetEnumType() {
-		output += fmt.Sprintf("%s\n", e.GetName())
+	enums := d.GetEnumType()
+	enumToSize := make(map[string]int, len(enums))
+	for _, e := range enums {
+		enumToSize[e.GetName()] = len(e.GetValue())
 	}
+	bytes, err := json.Marshal(enumToSize)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal enums into JSON: %v", err)
+	}
+	output := string(bytes)
 	return &plugin.CodeGeneratorResponse_File{
 		Name:    &filename,
 		Content: &output,
