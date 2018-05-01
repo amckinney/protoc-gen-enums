@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package = "foopb";
+
+enum Spec {
+	DEFAULT = 0;
+	PROTECTED = 1;
+	UNIVERSAL = 2;
+}
+
+message FooRequest {
+  enum Type {
+	A = 0;
+	B = 1;
+	C = 2;
+  }
+}
+
+message FooResponse {
+  enum Value {
+	X = 0;
+	Y = 1;
+	Z = 2;
+  }
+}
+
+service Foo {
+  rpc Foo(FooRequest) returns (FooResponse) {}
+}
