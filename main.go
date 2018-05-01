@@ -1,4 +1,4 @@
-package main // import github.com/amckinney/protoc-enums
+package main // import github.com/amckinney/protoc-gen-enums
 
 import (
 	"bufio"
@@ -9,28 +9,29 @@ import (
 )
 
 func main() {
-	in := bufio.NewReader(os.Stdin)
-	bytes, err := ioutil.ReadAll(in)
+	r := bufio.NewReader(os.Stdin)
+	in, err := ioutil.ReadAll(r)
 	if err != nil {
 		panic(err)
 	}
 
 	req := &plugin.CodeGeneratorRequest{}
-	if err := req.Unmarshal(bytes); err != nil {
+	if err := req.Unmarshal(in); err != nil {
 		panic(err)
 	}
 
-	res, err = generate(req)
+	res, err := generate(req)
 	if err != nil {
 		panic(err)
 	}
 
-	out, err := res.Marshal(make([]byte), true)
+	bytes := []byte{}
+	out, err := res.Marshal(bytes, true)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err := os.Stdout.Write(out)
+	_, err = os.Stdout.Write(out)
 	if err != nil {
 		panic(err)
 	}
